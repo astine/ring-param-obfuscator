@@ -8,4 +8,5 @@
                  [ring/ring-core "1.1.8"]
                  [ring/ring-codec "1.0.0"]
                  [org.clojure/tools.reader "0.7.3"]]
-  :profiles {:dev {:dependencies [[ring-serve "0.1.2"]]}})
+  :profiles {:dev {:dependencies [[ring-mock "0.1.3"]
+                                  [ring-serve "0.1.2"]]}})
