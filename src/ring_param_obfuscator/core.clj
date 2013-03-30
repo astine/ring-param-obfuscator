@@ -64,7 +64,7 @@
   "Simplistic function to create a url with a obfuscated parameter. Value
   will be serialized and added to link as a parameter."
   [link value]
-  (str (url-encode link)
+  (str link
        "?" 
        *obfuscated-parameter*
        "="
