@@ -42,9 +42,7 @@
   (response (pr-str (:deserialized-params req))))
 
 (defn create-basic-request [test-data]
-  (query-string (request :GET "/foo/10")
-                (str *obfuscated-parameter* "="
-                     (form-encode (serialize test-data)))))
+  (request :GET (serialize-link "/foo/10" test-data)))
 
 (deftest test-wrapper
   (let [test-data1 (random-string 10)
@@ -62,22 +60,29 @@
       (is (= (pr-str test-data4)
              (:body (app (create-basic-request test-data4))))))
 
-    (let [app (wrap-obfuscate-params simple-handler (random-string 10))]
-      (is (= (pr-str test-data1)
-             (:body (app (create-basic-request test-data1)))))
-      (is (= (pr-str test-data2)
-             (:body (app (create-basic-request test-data2)))))
-      (is (= (pr-str test-data3)
-             (:body (app (create-basic-request test-data3)))))
-      (is (= (pr-str test-data4)
-             (:body (app (create-basic-request test-data4))))))
-
-    (let [app (wrap-obfuscate-params simple-handler (random-string 10) "foobar")]
-      (is (= (pr-str test-data1)
-             (:body (app (create-basic-request test-data1)))))
-      (is (= (pr-str test-data2)
-             (:body (app (create-basic-request test-data2)))))
-      (is (= (pr-str test-data3)
-             (:body (app (create-basic-request test-data3)))))
-      (is (= (pr-str test-data4)
-             (:body (app (create-basic-request test-data4))))))))
+    (let [new-key (random-string 10)
+          app (wrap-obfuscate-params simple-handler new-key)]
+      (binding [*serialization-key* new-key]
+        (is (= (pr-str test-data1)
+               (:body (app (create-basic-request test-data1)))))
+        (is (= (pr-str test-data2)
+               (:body (app (create-basic-request test-data2)))))
+        (is (= (pr-str test-data3)
+               (:body (app (create-basic-request test-data3)))))
+        (is (= (pr-str test-data4)
+               (:body (app (create-basic-request test-data4)))))))
+      
+    (let [new-key (random-string 10)
+          new-param "foobar"
+          app (wrap-obfuscate-params simple-handler new-key new-param)]
+      (binding [*serialization-key* new-key
+                *obfuscated-parameter* new-param]
+        (is (= (pr-str test-data1)
+               (:body (app (create-basic-request test-data1)))))
+        (is (= (pr-str test-data2)
+               (:body (app (create-basic-request test-data2)))))
+        (is (= (pr-str test-data3)
+               (:body (app (create-basic-request test-data3)))))
+        (is (= (pr-str test-data4)
+               (:body (app (create-basic-request test-data4)))))))))
+  
