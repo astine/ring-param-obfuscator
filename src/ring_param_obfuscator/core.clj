@@ -62,7 +62,9 @@
 
 (defn serialize-link 
   "Simplistic function to create a url with a obfuscated parameter. Value
-  will be serialized and added to link as a parameter."
+  will be serialized and added to link as a parameter. This function should
+  be called from within a handler with the wrap-obfuscated-params middleware
+  lest the wrong key or parameter name be used."
   [link value]
   (str link
        "?" 
